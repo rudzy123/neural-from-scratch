@@ -1,264 +1,85 @@
-# Build a Large Language Model (From Scratch)
+# neural-from-scratch
 
-This repository contains the code for developing, pretraining, and finetuning a GPT-like LLM and is the official code repository for the book [Build a Large Language Model (From Scratch)](https://amzn.to/4fqvn0D).
+A personal learning project. I am implementing and experimenting with a GPT-style large language model from scratch in PyTorch, on my own machine, so I can see how the model is built and how training actually behaves.
 
-<br>
-<br>
+I am working through the pieces in order: text tokenization and data loading, attention, a small decoder-only transformer, pretraining on unlabeled text, and finetuning. The models stay small on purpose. I want runs I can finish locally, code I can read line by line, and room to change a layer or a hyperparameter and try again.
 
-<a href="https://amzn.to/4fqvn0D"><img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/cover.jpg?123" width="250px"></a>
+The core implementations in this repository are adapted from Sebastian Raschka's open-source project [LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch). This repository is my derivative copy for study. I use that code as the starting point, run it, and modify it as I learn. Authorship of those original implementations stays with the upstream project. The copyright and license details are in [Attribution / License](#attribution--license).
 
-<br>
+## What I am working on
 
-In [*Build a Large Language Model (From Scratch)*](http://mng.bz/orYv), you'll learn and understand how large language models (LLMs) work from the inside out by coding them from the ground up, step by step. In this book, I'll guide you through creating your own LLM, explaining each stage with clear text, diagrams, and examples.
+- A GPT-style model in PyTorch: embeddings, causal attention, transformer blocks, and text generation.
+- A training loop for pretraining on unlabeled text, then finetuning for classification and instruction following.
+- Optional experiments that already live in this tree, after the main path is clear: KV cache, grouped-query attention, mixture-of-experts, Llama-style and Qwen-style architectures, LoRA, and direct preference optimization.
+- Keeping the setup local and small enough that I can inspect weights, loss, and generated text myself.
 
-The method described in this book for training and developing your own small-but-functional model for educational purposes mirrors the approach used in creating large-scale foundational models such as those behind ChatGPT. In addition, this book includes code for loading the weights of larger pretrained models for finetuning.
+## Hardware
 
-- Link to the official [source code repository](https://github.com/rasbt/LLMs-from-scratch)
-- [Link to the book at Manning (the publisher's website)](http://mng.bz/orYv)
-- [Link to the book page on Amazon.com](https://www.amazon.com/gp/product/1633437167)
-- ISBN 9781633437166
+I run this on a local Ubuntu machine with an NVIDIA RTX 5070. PyTorch uses that GPU through CUDA when it is available. The main notebooks and training scripts target small models, which fits how I want to learn: short runs, readable code, and the option to rerun an experiment after a change.
 
-<a href="http://mng.bz/orYv#reviews"><img src="https://sebastianraschka.com//images/LLMs-from-scratch-images/other/reviews.png" width="220px"></a>
+## Layout
 
+The folder names follow the upstream repository. Each numbered directory is one stage of the build. The main code for a stage is in its `01_main-chapter-code/` directory. Later directories also contain optional experiments.
 
-<br>
-<br>
+| Path | What it covers |
+| --- | --- |
+| [`setup/`](setup) | Environment and install notes |
+| [`ch02/`](ch02) | Tokenization, embeddings, and the dataloader |
+| [`ch03/`](ch03) | Attention, including multi-head attention |
+| [`ch04/`](ch04) | The GPT model, plus optional attention variants (KV cache, grouped-query attention, mixture-of-experts, and others) |
+| [`ch05/`](ch05) | Pretraining, generation, and optional architectures (Llama, Qwen, Gemma, and others) |
+| [`ch06/`](ch06) | Finetuning for text classification |
+| [`ch07/`](ch07) | Instruction finetuning, dataset tools, and preference tuning |
+| [`appendix-A/`](appendix-A) | PyTorch introduction used by the later code |
+| [`appendix-D/`](appendix-D) | Training-loop additions such as learning-rate schedules |
+| [`appendix-E/`](appendix-E) | Parameter-efficient finetuning with LoRA |
+| [`pkg/llms_from_scratch/`](pkg/llms_from_scratch) | The core implementations as an importable package |
 
-To download a copy of this repository, click on the [Download ZIP](https://github.com/rasbt/LLMs-from-scratch/archive/refs/heads/main.zip) button or execute the following command in your terminal:
+`ch01/` is background notes and has no model code. `appendix-B/` and `appendix-C/` are reference notes and exercise solutions carried over with the upstream tree.
+
+Entry points I use:
+
+- [ch02.ipynb](ch02/01_main-chapter-code/ch02.ipynb) for text data
+- [ch03.ipynb](ch03/01_main-chapter-code/ch03.ipynb) for attention
+- [ch04.ipynb](ch04/01_main-chapter-code/ch04.ipynb) and [gpt.py](ch04/01_main-chapter-code/gpt.py) for the model
+- [ch05.ipynb](ch05/01_main-chapter-code/ch05.ipynb) and [gpt_train.py](ch05/01_main-chapter-code/gpt_train.py) for pretraining
+- [ch06.ipynb](ch06/01_main-chapter-code/ch06.ipynb) for classification finetuning
+- [ch07.ipynb](ch07/01_main-chapter-code/ch07.ipynb) for instruction finetuning
+
+## Setup
 
 ```bash
-git clone --depth 1 https://github.com/rasbt/LLMs-from-scratch.git
+git clone https://github.com/rudzy123/neural-from-scratch.git
+cd neural-from-scratch
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-<br>
+`requirements.txt` covers PyTorch, Jupyter, and the libraries used by the main notebooks. Some optional notebooks list extra packages in a local `requirements-extra.txt`. Further install notes are in [setup/README.md](setup/README.md).
 
-(If you downloaded the code bundle from the Manning website, please consider visiting the official code repository on GitHub at [https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch) for the latest updates.)
+## Attribution / License
 
-<br>
-<br>
+This repository is a derivative educational project. It is adapted from the open-source repository [https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch) by Sebastian Raschka, licensed under the Apache License, Version 2.0.
 
-
-# Table of Contents
-
-Please note that this `README.md` file is a Markdown (`.md`) file. If you have downloaded this code bundle from the Manning website and are viewing it on your local computer, I recommend using a Markdown editor or previewer for proper viewing. If you haven't installed a Markdown editor yet, [Ghostwriter](https://ghostwriter.kde.org) is a good free option.
-
-You can alternatively view this and other files on GitHub at [https://github.com/rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch) in your browser, which renders Markdown automatically.
-
-<br>
-<br>
-
-
-> **Tip:**
-> If you're seeking guidance on installing Python and Python packages and setting up your code environment, I suggest reading the [README.md](setup/README.md) file located in the [setup](setup) directory.
-
-<br>
-<br>
-
-[![Code tests Linux](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-linux-uv.yml/badge.svg)](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-linux-uv.yml)
-[![Code tests Windows](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-windows-uv-pip.yml/badge.svg)](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-windows-uv-pip.yml)
-[![Code tests macOS](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-macos-uv.yml/badge.svg)](https://github.com/rasbt/LLMs-from-scratch/actions/workflows/basic-tests-macos-uv.yml)
-
-- [Troubleshooting Guide](./troubleshooting.md)
-
-
-| Chapter Title                                              | Main Code (for Quick Access)                                                                                                    | All Code + Supplementary      |
-|------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
-| [Setup recommendations](setup) <br/>[How to best read this book](https://sebastianraschka.com/blog/2025/reading-books.html)                            | -                                                                                                                               | -                             |
-| Ch 1: Understanding Large Language Models                  | No code                                                                                                                         | -                             |
-| Ch 2: Working with Text Data                               | - [ch02.ipynb](ch02/01_main-chapter-code/ch02.ipynb)<br/>- [dataloader.ipynb](ch02/01_main-chapter-code/dataloader.ipynb) (summary)<br/>- [exercise-solutions.ipynb](ch02/01_main-chapter-code/exercise-solutions.ipynb)               | [./ch02](./ch02)            |
-| Ch 3: Coding Attention Mechanisms                          | - [ch03.ipynb](ch03/01_main-chapter-code/ch03.ipynb)<br/>- [multihead-attention.ipynb](ch03/01_main-chapter-code/multihead-attention.ipynb) (summary) <br/>- [exercise-solutions.ipynb](ch03/01_main-chapter-code/exercise-solutions.ipynb)| [./ch03](./ch03)             |
-| Ch 4: Implementing a GPT Model from Scratch                | - [ch04.ipynb](ch04/01_main-chapter-code/ch04.ipynb)<br/>- [gpt.py](ch04/01_main-chapter-code/gpt.py) (summary)<br/>- [exercise-solutions.ipynb](ch04/01_main-chapter-code/exercise-solutions.ipynb) | [./ch04](./ch04)           |
-| Ch 5: Pretraining on Unlabeled Data                        | - [ch05.ipynb](ch05/01_main-chapter-code/ch05.ipynb)<br/>- [gpt_train.py](ch05/01_main-chapter-code/gpt_train.py) (summary) <br/>- [gpt_generate.py](ch05/01_main-chapter-code/gpt_generate.py) (summary) <br/>- [exercise-solutions.ipynb](ch05/01_main-chapter-code/exercise-solutions.ipynb) | [./ch05](./ch05)              |
-| Ch 6: Finetuning for Text Classification                   | - [ch06.ipynb](ch06/01_main-chapter-code/ch06.ipynb)  <br/>- [gpt_class_finetune.py](ch06/01_main-chapter-code/gpt_class_finetune.py)  <br/>- [exercise-solutions.ipynb](ch06/01_main-chapter-code/exercise-solutions.ipynb) | [./ch06](./ch06)              |
-| Ch 7: Finetuning to Follow Instructions                    | - [ch07.ipynb](ch07/01_main-chapter-code/ch07.ipynb)<br/>- [gpt_instruction_finetuning.py](ch07/01_main-chapter-code/gpt_instruction_finetuning.py) (summary)<br/>- [ollama_evaluate.py](ch07/01_main-chapter-code/ollama_evaluate.py) (summary)<br/>- [exercise-solutions.ipynb](ch07/01_main-chapter-code/exercise-solutions.ipynb) | [./ch07](./ch07)  |
-| Appendix A: Introduction to PyTorch                        | - [code-part1.ipynb](appendix-A/01_main-chapter-code/code-part1.ipynb)<br/>- [code-part2.ipynb](appendix-A/01_main-chapter-code/code-part2.ipynb)<br/>- [DDP-script.py](appendix-A/01_main-chapter-code/DDP-script.py)<br/>- [exercise-solutions.ipynb](appendix-A/01_main-chapter-code/exercise-solutions.ipynb) | [./appendix-A](./appendix-A) |
-| Appendix B: References and Further Reading                 | No code                                                                                                                         | [./appendix-B](./appendix-B) |
-| Appendix C: Exercise Solutions                             | - [list of exercise solutions](appendix-C)                                                                 | [./appendix-C](./appendix-C) |
-| Appendix D: Adding Bells and Whistles to the Training Loop | - [appendix-D.ipynb](appendix-D/01_main-chapter-code/appendix-D.ipynb)                                                          | [./appendix-D](./appendix-D)  |
-| Appendix E: Parameter-efficient Finetuning with LoRA       | - [appendix-E.ipynb](appendix-E/01_main-chapter-code/appendix-E.ipynb)                                                          | [./appendix-E](./appendix-E) |
-
-<br>
-&nbsp;
-
-The mental model below summarizes the contents covered in this book.
-
-<img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/mental-model.jpg" width="650px">
-
-
-<br>
-&nbsp;
-
-## Prerequisites
-
-The most important prerequisite is a strong foundation in Python programming.
-With this knowledge, you will be well prepared to explore the fascinating world of LLMs
-and understand the concepts and code examples presented in this book.
-
-If you have some experience with deep neural networks, you may find certain concepts more familiar, as LLMs are built upon these architectures.
-
-This book uses PyTorch to implement the code from scratch without using any external LLM libraries. While proficiency in PyTorch is not a prerequisite, familiarity with PyTorch basics is certainly useful. If you are new to PyTorch, Appendix A provides a concise introduction to PyTorch. Alternatively, you may find my book, [PyTorch in One Hour: From Tensors to Training Neural Networks on Multiple GPUs](https://sebastianraschka.com/teaching/pytorch-1h/), helpful for learning about the essentials.
-
-
-
-<br>
-&nbsp;
-
-## Hardware Requirements
-
-The code in the main chapters of this book is designed to run on conventional laptops within a reasonable timeframe and does not require specialized hardware. This approach ensures that a wide audience can engage with the material. Additionally, the code automatically utilizes GPUs if they are available. (Please see the [setup](https://github.com/rasbt/LLMs-from-scratch/blob/main/setup/README.md) doc for additional recommendations.)
-
-
-&nbsp;
-## Video Course
-
-[A 17-hour and 15-minute companion video course](https://www.manning.com/livevideo/master-and-build-large-language-models) where I code through each chapter of the book. The course is organized into chapters and sections that mirror the book's structure so that it can be used as a standalone alternative to the book or complementary code-along resource.
-
-<a href="https://www.manning.com/livevideo/master-and-build-large-language-models"><img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/video-screenshot.webp?123" width="350px"></a>
-
-
-&nbsp;
-
-
-## Companion Book / Sequel
-
-[*Build A Reasoning Model (From Scratch)*](https://mng.bz/lZ5B), while a standalone book, can be considered as a sequel to *Build A Large Language Model (From Scratch)*.
-
-It starts with a pretrained model and implements different reasoning approaches, including inference-time scaling, reinforcement learning, and distillation, to improve the model's reasoning capabilities.
-
-Similar to *Build A Large Language Model (From Scratch)*, [*Build A Reasoning Model (From Scratch)*](https://mng.bz/lZ5B) takes a hands-on approach implementing these methods from scratch.
-
-<a href="https://mng.bz/lZ5B"><img src="https://sebastianraschka.com/images/reasoning-from-scratch-images/cover.webp?123" width="120px"></a>
-
-- [Amazon link](https://amzn.to/4aAKiFY)
-- [Manning link](https://mng.bz/lZ5B)
-- [GitHub repository](https://github.com/rasbt/reasoning-from-scratch)
-
-<br>
-
-&nbsp;
-## Exercises
-
-Each chapter of the book includes several exercises. The solutions are summarized in Appendix C, and the corresponding code notebooks are available in the main chapter folders of this repository (for example,  [./ch02/01_main-chapter-code/exercise-solutions.ipynb](./ch02/01_main-chapter-code/exercise-solutions.ipynb).
-
-In addition to the code exercises, you can download a free 170-page PDF titled  [Test Yourself On Build a Large Language Model (From Scratch)](https://www.manning.com/books/test-yourself-on-build-a-large-language-model-from-scratch) from the Manning website. It contains approximately 30 quiz questions and solutions per chapter to help you test your understanding.
-
-<a href="https://www.manning.com/books/test-yourself-on-build-a-large-language-model-from-scratch"><img src="https://sebastianraschka.com/images/LLMs-from-scratch-images/test-yourself-cover.jpg?123" width="150px"></a>
-
-&nbsp;
-## Bonus Material
-
-Several folders contain optional materials as a bonus for interested readers:
-- **Setup**
-  - [Python Setup Tips](setup/01_optional-python-setup-preferences)
-  - [Installing Python Packages and Libraries Used in This Book](setup/02_installing-python-libraries)
-  - [Docker Environment Setup Guide](setup/03_optional-docker-environment)
-
-- **Chapter 2: Working With Text Data**
-  - [Byte Pair Encoding (BPE) Tokenizer From Scratch](ch02/05_bpe-from-scratch/bpe-from-scratch-simple.ipynb)
-  - [Comparing Various Byte Pair Encoding (BPE) Implementations](ch02/02_bonus_bytepair-encoder)
-  - [Understanding the Difference Between Embedding Layers and Linear Layers](ch02/03_bonus_embedding-vs-matmul)
-  - [Dataloader Intuition With Simple Numbers](ch02/04_bonus_dataloader-intuition)
-  - [BPE From Scratch](ch02/05_bpe-from-scratch)
-  - [SimpleTokenizerV3 variant](ch02/06_bonus_simple-tokenizer-v3)
-
-- **Chapter 3: Coding Attention Mechanisms**
-  - [Comparing Efficient Multi-Head Attention Implementations](ch03/02_bonus_efficient-multihead-attention/mha-implementations.ipynb)
-  - [Understanding PyTorch Buffers](ch03/03_understanding-buffers/understanding-buffers.ipynb)
-
-- **Chapter 4: Implementing a GPT Model From Scratch**
-  - [FLOPs Analysis](ch04/02_performance-analysis/flops-analysis.ipynb)
-  - [KV Cache](ch04/03_kv-cache)
-  - [Attention Alternatives](ch04/#attention-alternatives)
-    - [Grouped-Query Attention](ch04/04_gqa)
-    - [Multi-Head Latent Attention](ch04/05_mla)
-    - [Sliding Window Attention](ch04/06_swa)
-    - [Gated DeltaNet](ch04/08_deltanet)
-    - [DeepSeek Sparse Attention (DSA)](ch04/09_dsa)
-    - [Cross-Layer KV Sharing](ch04/10_kv-sharing)
-  - [Mixture-of-Experts (MoE)](ch04/07_moe)
-
-- **Chapter 5: Pretraining on Unlabeled Data**
-  - [Alternative Weight Loading Methods](ch05/02_alternative_weight_loading/)
-  - [Pretraining GPT on the Project Gutenberg Dataset](ch05/03_bonus_pretraining_on_gutenberg)
-  - [Adding Bells and Whistles to the Training Loop](ch05/04_learning_rate_schedulers)
-  - [Discrepancies between CPU and MPS Devices](ch05/19_cpu_mps_differences)
-  - [Optimizing Hyperparameters for Pretraining](ch05/05_bonus_hparam_tuning)
-  - [Building a User Interface to Interact With the Pretrained LLM](ch05/06_user_interface)
-  - [Converting GPT to Llama](ch05/07_gpt_to_llama)
-  - [Memory-efficient Model Weight Loading](ch05/08_memory_efficient_weight_loading/memory-efficient-state-dict.ipynb)
-  - [Extending the Tiktoken BPE Tokenizer with New Tokens](ch05/09_extending-tokenizers/extend-tiktoken.ipynb)
-  - [PyTorch Performance Tips for Faster LLM Training](ch05/10_llm-training-speed)
-  - [LLM Architectures](ch05/#llm-architectures-from-scratch)
-    - [Llama 3.2 From Scratch](ch05/07_gpt_to_llama/standalone-llama32.ipynb)
-    - [Qwen3 Dense and Mixture-of-Experts (MoE) From Scratch](ch05/11_qwen3/)
-    - [Gemma 3 From Scratch](ch05/12_gemma3/)
-    - [Olmo 3 From Scratch](ch05/13_olmo3/)
-    - [Tiny Aya From Scratch](ch05/15_tiny-aya/)
-    - [Qwen3.5 From Scratch](ch05/16_qwen3.5/)
-    - [Gemma 4 E2B and E4B From Scratch](ch05/17_gemma4/)
-  - [Chapter 5 with other LLMs as Drop-In Replacement (e.g., Llama 3, Qwen 3)](ch05/14_ch05_with_other_llms/)
-- **Chapter 6: Finetuning for classification**
-  - [Additional Experiments Finetuning Different Layers and Using Larger Models](ch06/02_bonus_additional-experiments)
-  - [Finetuning Different Models on the 50k IMDb Movie Review Dataset](ch06/03_bonus_imdb-classification)
-  - [Building a User Interface to Interact With the GPT-based Spam Classifier](ch06/04_user_interface)
-- **Chapter 7: Finetuning to follow instructions**
-  - [Dataset Utilities for Finding Near Duplicates and Creating Passive Voice Entries](ch07/02_dataset-utilities)
-  - [Evaluating Instruction Responses Using the OpenAI API and Ollama](ch07/03_model-evaluation)
-  - [Generating a Dataset for Instruction Finetuning](ch07/05_dataset-generation/llama3-ollama.ipynb)
-  - [Improving a Dataset for Instruction Finetuning](ch07/05_dataset-generation/reflection-gpt4.ipynb)
-  - [Generating a Preference Dataset With Llama 3.1 70B and Ollama](ch07/04_preference-tuning-with-dpo/create-preference-data-ollama.ipynb)
-  - [Direct Preference Optimization (DPO) for LLM Alignment](ch07/04_preference-tuning-with-dpo/dpo-from-scratch.ipynb)
-  - [Building a User Interface to Interact With the Instruction-Finetuned GPT Model](ch07/06_user_interface)
-
-More bonus material from the [Reasoning From Scratch](https://github.com/rasbt/reasoning-from-scratch) repository:
-
-- **Qwen3 (From Scratch) Basics**
-  - [Qwen3 Source Code Walkthrough](https://github.com/rasbt/reasoning-from-scratch/blob/main/chC/01_main-chapter-code/chC_main.ipynb)
-  - [Optimized Qwen3](https://github.com/rasbt/reasoning-from-scratch/tree/main/ch02/03_optimized-LLM)
-
-- **Evaluation**
-  - [Verifier-Based Evaluation (MATH-500)](https://github.com/rasbt/reasoning-from-scratch/tree/main/ch03)
-  - [Multiple-Choice Evaluation (MMLU)](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/02_mmlu)
-  - [LLM Leaderboard Evaluation](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/03_leaderboards)
-  - [LLM-as-a-Judge Evaluation](https://github.com/rasbt/reasoning-from-scratch/blob/main/chF/04_llm-judge)
-- **Inference Scaling**
-  - [Self-Consistency](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch04/01_main-chapter-code/ch04_main.ipynb)
-  - [Self-Refinement](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch05/01_main-chapter-code/ch05_main.ipynb)
-
-- **Reinforcement Learning** (RL)
-  - [RLVR with GRPO From Scratch](https://github.com/rasbt/reasoning-from-scratch/blob/main/ch06/01_main-chapter-code/ch06_main.ipynb)
-
-
-<br>
-&nbsp;
-
-## Questions, Feedback, and Contributing to This Repository
-
-
-I welcome all sorts of feedback, best shared via the [Manning Forum](https://livebook.manning.com/forum?product=raschka&page=1) or [GitHub Discussions](https://github.com/rasbt/LLMs-from-scratch/discussions). Likewise, if you have any questions or just want to bounce ideas off others, please don't hesitate to post these in the forum as well.
-
-Please note that since this repository contains the code corresponding to a print book, I currently cannot accept contributions that would extend the contents of the main chapter code, as it would introduce deviations from the physical book. Keeping it consistent helps ensure a smooth experience for everyone.
-
-
-&nbsp;
-## Citation
-
-If you find this book or code useful for your research, please consider citing it.
-
-Chicago-style citation:
-
-> Raschka, Sebastian. *Build A Large Language Model (From Scratch)*. Manning, 2024. ISBN: 978-1633437166.
-
-BibTeX entry:
+The original code and materials are copyright Sebastian Raschka and are used under the Apache License 2.0:
 
 ```
-@book{build-llms-from-scratch-book,
-  author       = {Sebastian Raschka},
-  title        = {Build A Large Language Model (From Scratch)},
-  publisher    = {Manning},
-  year         = {2024},
-  isbn         = {978-1633437166},
-  url          = {https://www.manning.com/books/build-a-large-language-model-from-scratch},
-  github       = {https://github.com/rasbt/LLMs-from-scratch}
-}
+Copyright 2023-2026 Sebastian Raschka
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
+
+The full license text is [LICENSE.txt](LICENSE.txt). That file is the Apache License 2.0 text from the upstream project, including the original copyright notice. It is kept intact.
+
+Modifications have been made, and further modifications will be made, for personal learning. Those changes are part of this derivative project. They do not transfer authorship of the upstream implementations, and they do not replace the Apache-2.0 terms that apply to the original code. Copyright and attribution notices shipped with the source, including the notice in `LICENSE.txt` and the notices in `pkg/llms_from_scratch/`, remain in place.
